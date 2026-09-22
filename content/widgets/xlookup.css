@@ -1,0 +1,206 @@
+/* ===== עיצוב הבלוקים הייחודיים ללומדת XLOOKUP =====
+   הקובץ הזה הוא *לא* חלק מהמנוע המשותף. css/ ו-js/ זהים בין כל הלומדות
+   וניתנים להחלפה מלאה בשדרוג; כל מה שייחודי לנושא XLOOKUP יושב כאן ולידו
+   ב-content/widgets/*.js.
+
+   טוקני הצבע למטה הם שכבת הטוקנים של הקורס הזה — אותו עיקרון של
+   css/tokens.css ("אין צבעים חד-פעמיים בתוך רכיבים"), רק בהיקף הקורס.
+   הערכים עצמם נלקחו מהפלטה הקיימת ב-tokens.css כדי שהכול ייראה אותו דבר. */
+
+:root {
+  /* שלושת התפקידים של XLOOKUP. הצבעים האלה חוזרים בכל הקורס — בהנפשה,
+     בנוסחאות, בשאלות ובדף הטיפים המודפס. זה עוגן הזיכרון של התלמידה:
+     כחול = מה מחפשים, כתום = איפה מחפשים, ירוק = מה מחזירים. */
+  --xl-value: #4A90E2;
+  --xl-value-bg: #E8F1FC;
+  --xl-lookup: #E58700;
+  --xl-lookup-bg: #FFF3E0;
+  --xl-return: #12A47B;
+  --xl-return-bg: #E4F7F1;
+  --xl-mono: Consolas, "Courier New", monospace;
+}
+
+/* ===== נוסחה צבועה — בלוק formula וגם בתוך ההנפשה ===== */
+.xl-formula {
+  direction: ltr;
+  text-align: center;
+  font-family: var(--xl-mono);
+  font-size: 1.15rem;
+  font-weight: 700;
+  background: var(--card-bg);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-2);
+  overflow-x: auto;
+  white-space: nowrap;
+}
+@media (max-width: 480px) { .xl-formula { font-size: 0.92rem; } }
+.xl-formula .p-value  { color: var(--xl-value);  background: var(--xl-value-bg);  border-radius: 6px; padding: 1px 5px; }
+.xl-formula .p-lookup { color: var(--xl-lookup); background: var(--xl-lookup-bg); border-radius: 6px; padding: 1px 5px; }
+.xl-formula .p-return { color: var(--xl-return); background: var(--xl-return-bg); border-radius: 6px; padding: 1px 5px; }
+.xl-formula .p-mode   { color: var(--chapter-6); background: #F3E8FA; border-radius: 6px; padding: 1px 5px; }
+.xl-formula .p-dim    { color: var(--text-faint); }
+.xl-formula-note { font-size: 0.85rem; color: var(--text-muted); text-align: center; margin-top: var(--space-2); }
+
+/* מקרא שלושת התפקידים */
+.xl-legend { display: flex; flex-wrap: wrap; gap: var(--space-2); justify-content: center; margin-top: var(--space-2); }
+.xl-legend span { font-size: 0.8rem; font-weight: 500; border-radius: var(--radius-full); padding: 3px 10px; border: 1px solid transparent; }
+.xl-legend .l-value  { color: var(--xl-value);  background: var(--xl-value-bg);  border-color: var(--xl-value); }
+.xl-legend .l-lookup { color: var(--xl-lookup); background: var(--xl-lookup-bg); border-color: var(--xl-lookup); }
+.xl-legend .l-return { color: var(--xl-return); background: var(--xl-return-bg); border-color: var(--xl-return); }
+
+/* ===== ההנפשה ===== */
+.xl-demo { background: var(--card-bg); border: 2px solid var(--border); border-radius: var(--radius-md); padding: var(--space-4); }
+.xl-demo-ask { font-size: 0.9rem; color: var(--text-muted); margin-bottom: var(--space-2); }
+.xl-demo-choices { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-bottom: var(--space-4); }
+.xl-demo-choice {
+  font-family: var(--xl-mono); font-weight: 700; font-size: 1rem; direction: ltr; cursor: pointer;
+  border: 2px solid var(--xl-value); color: var(--xl-value); background: var(--xl-value-bg);
+  border-radius: var(--radius-full); padding: 6px 16px;
+  transition: transform var(--duration-fast) var(--ease), box-shadow var(--duration-fast) var(--ease);
+}
+.xl-demo-choice:hover:not(:disabled) { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+.xl-demo-choice.is-chosen { background: var(--xl-value); color: #fff; }
+.xl-demo-choice:disabled { cursor: default; opacity: 0.55; }
+.xl-demo-choice.is-chosen:disabled { opacity: 1; }
+
+.xl-demo-stage { position: relative; overflow-x: auto; padding-bottom: var(--space-2); }
+/* z-index: שכבת החיצים חייבת לצייר *מעל* התאים. בלעדיו הטבלה (שמגיעה
+   אחריה ב-DOM) מכסה את החץ בדיוק כשתא היעד מתמלא בצבע. */
+.xl-demo-arrows { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; z-index: 2; }
+.xl-demo-table { position: relative; z-index: 1; }
+
+.xl-demo-table { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 320px; }
+.xl-demo-table th, .xl-demo-table td {
+  padding: 9px 10px; text-align: center; font-size: 0.92rem;
+  border-bottom: 1px solid var(--border); background: var(--card-bg);
+  transition: background var(--duration-base) var(--ease), color var(--duration-base) var(--ease);
+}
+.xl-demo-table th { font-weight: 700; color: var(--text-muted); font-size: 0.82rem; background: var(--bg); }
+.xl-demo-table .cell-code { font-family: var(--xl-mono); direction: ltr; }
+.xl-demo-table th.col-lookup { color: var(--xl-lookup); background: var(--xl-lookup-bg); }
+.xl-demo-table th.col-return { color: var(--xl-return); background: var(--xl-return-bg); }
+.xl-demo-table td.scanning { background: var(--xl-lookup-bg); }
+.xl-demo-table td.rejected { color: var(--text-faint); text-decoration: line-through; }
+.xl-demo-table td.candidate { background: #FFE9C2; }
+.xl-demo-table td.matched { background: var(--xl-lookup); color: #fff; font-weight: 700; }
+.xl-demo-table td.returned { background: var(--xl-return); color: #fff; font-weight: 700; }
+
+.xl-demo-result { display: flex; align-items: center; justify-content: center; gap: var(--space-3); margin-top: var(--space-4); flex-wrap: wrap; }
+.xl-demo-result-label { font-weight: 500; color: var(--text-muted); }
+.xl-demo-result-box {
+  min-width: 130px; min-height: 44px; display: flex; align-items: center; justify-content: center;
+  border: 2px dashed var(--border); border-radius: var(--radius-sm);
+  font-weight: 700; font-size: 1.05rem; color: var(--text-faint); padding: 0 var(--space-3);
+  transition: all var(--duration-base) var(--ease);
+}
+.xl-demo-result-box.filled { border-style: solid; border-color: var(--xl-return); background: var(--xl-return-bg); color: var(--xl-return); }
+.xl-demo-narration {
+  margin-top: var(--space-3); min-height: 2.8em;
+  background: var(--bg); border-radius: var(--radius-sm); padding: var(--space-2) var(--space-3);
+  font-size: 0.92rem; line-height: 1.5;
+}
+.xl-demo-narration .n-num { font-family: var(--xl-mono); font-weight: 700; direction: ltr; display: inline-block; }
+.xl-demo-actions { display: flex; gap: var(--space-2); justify-content: center; margin-top: var(--space-3); flex-wrap: wrap; }
+
+/* ===== שתי טבלאות עם מזהה מחבר ===== */
+.xl-two { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: var(--space-2); }
+@media (max-width: 620px) { .xl-two { grid-template-columns: 1fr; } .xl-two-link { transform: rotate(90deg); } }
+.xl-two-side { min-width: 0; overflow-x: auto; }
+.xl-two-caption { font-size: 0.82rem; font-weight: 700; color: var(--text-muted); text-align: center; margin-bottom: var(--space-1); }
+.xl-two-link { font-size: 1.6rem; text-align: center; color: var(--xl-lookup); }
+.xl-two .content-table td.key-col, .xl-two .content-table th.key-col {
+  background: var(--xl-lookup-bg); color: var(--xl-lookup); font-weight: 700;
+}
+
+/* ===== ציר הזמן ההיסטורי ===== */
+.xl-timeline { display: flex; flex-direction: column; gap: var(--space-2); }
+.xl-tl-item {
+  display: grid; grid-template-columns: 70px 1fr; gap: var(--space-3); align-items: start;
+  border-right: 3px solid var(--border); padding: var(--space-2) var(--space-3) var(--space-2) 0;
+}
+.xl-tl-item.is-hero { border-right-color: var(--xl-return); background: var(--xl-return-bg); border-radius: var(--radius-sm); }
+.xl-tl-year { font-weight: 800; color: var(--text-muted); font-family: var(--xl-mono); direction: ltr; }
+.xl-tl-item.is-hero .xl-tl-year { color: var(--xl-return); }
+.xl-tl-name { font-weight: 700; direction: ltr; text-align: right; }
+.xl-tl-body { font-size: 0.9rem; color: var(--text-muted); margin-top: 2px; }
+
+/* ===== השוואה: ב-VLOOKUP / ב-XLOOKUP ===== */
+.xl-compare { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+@media (max-width: 560px) { .xl-compare { grid-template-columns: 1fr; } }
+.xl-compare-side { border-radius: var(--radius-sm); padding: var(--space-3); border: 2px solid var(--border); }
+.xl-compare-side.old { background: #FBF7F2; border-color: #E8DCCB; }
+.xl-compare-side.new { background: var(--xl-return-bg); border-color: var(--xl-return); }
+.xl-compare-head { font-weight: 800; margin-bottom: var(--space-2); direction: ltr; text-align: right; }
+.xl-compare-side.old .xl-compare-head { color: #8A6D3B; }
+.xl-compare-side.new .xl-compare-head { color: var(--xl-return); }
+.xl-compare-side ul { margin: 0; padding-inline-start: 1.1em; }
+.xl-compare-side li { font-size: 0.9rem; margin-bottom: var(--space-1); }
+
+/* ===== הדגמת שגיאה ===== */
+.xl-error { border: 2px solid var(--danger); border-radius: var(--radius-sm); overflow: hidden; }
+.xl-error-head {
+  background: var(--danger-bg); color: var(--danger); font-weight: 800;
+  padding: var(--space-2) var(--space-3); font-family: var(--xl-mono); direction: ltr; text-align: right;
+}
+.xl-error-row { padding: var(--space-2) var(--space-3); font-size: 0.92rem; border-top: 1px solid var(--border); }
+.xl-error-row.fix { background: var(--success-bg); }
+
+/* ===== שאלת שלושת החלקים ===== */
+.xl-fparts-scenario { background: var(--bg); border-radius: var(--radius-sm); padding: var(--space-3); margin-bottom: var(--space-3); font-size: 0.93rem; }
+.xl-fparts-row { display: grid; grid-template-columns: auto 1fr; gap: var(--space-2); align-items: center; margin-bottom: var(--space-2); }
+@media (max-width: 480px) { .xl-fparts-row { grid-template-columns: 1fr; } }
+.xl-fparts-chip { font-size: 0.82rem; font-weight: 700; border-radius: var(--radius-full); padding: 4px 11px; white-space: nowrap; }
+.xl-fparts-row.r-value  .xl-fparts-chip { color: var(--xl-value);  background: var(--xl-value-bg); }
+.xl-fparts-row.r-lookup .xl-fparts-chip { color: var(--xl-lookup); background: var(--xl-lookup-bg); }
+.xl-fparts-row.r-return .xl-fparts-chip { color: var(--xl-return); background: var(--xl-return-bg); }
+.xl-fparts-select {
+  width: 100%; font-family: var(--font-body); font-size: 0.95rem;
+  padding: 10px var(--space-3); border-radius: var(--radius-sm);
+  border: 2px solid var(--border); background: var(--card-bg); color: var(--text);
+}
+.xl-fparts-select:focus { outline: none; border-color: var(--color-primary); }
+.xl-fparts-row.is-ok .xl-fparts-select { border-color: var(--success); background: var(--success-bg); }
+.xl-fparts-row.is-bad .xl-fparts-select { border-color: var(--danger); background: var(--danger-bg); }
+.xl-fparts-preview { margin: var(--space-3) 0; }
+
+/* כיבוד העדפת "פחות תנועה" — ההנפשה עדיין מגיעה לתוצאה, רק בלי המסע */
+@media (prefers-reduced-motion: reduce) {
+  .xl-demo-table th, .xl-demo-table td, .xl-demo-result-box, .xl-demo-choice { transition: none; }
+}
+
+/* עוטף יחסי לטבלה, כדי שהחצים יישבו בדיוק מעל התאים גם כשגוללים לרוחב */
+.xl-demo-canvas { position: relative; min-width: 100%; display: block; }
+
+/* ===== גלישה אופקית ברוחב טלפון =====
+   הקורס הזה מלא במחרוזות LTR ארוכות בלי רווחים — נוסחאות שלמות בתוך
+   אפשרויות תשובה, למשל =XLOOKUP(F2,$A$2:$A$20,$B$2:$B$20,"לא במלאי").
+   הדפדפן לא שובר מחרוזת כזו, ולכן כל הדף זז הצידה בטלפון.
+   break-word שובר *רק* מילה שלא נכנסת בשורה בפני עצמה — כלומר בדיוק את
+   הנוסחאות האלה, בלי לגעת בשבירת מילים בעברית.
+   (בלוק .xl-formula לא נכלל בכוונה: שם יש גלילה פנימית, ושבירת נוסחה
+   באמצע דווקא תפגע בקריאוּת.) */
+.btn-option,
+.question-prompt,
+.box-body,
+.xl-fparts-scenario,
+.xl-error-row,
+.xl-compare-side li,
+.content-table td,
+.block p {
+  overflow-wrap: break-word;
+}
+
+/* ===== כפתור הורדת קובץ תרגול ===== */
+.xl-download-btn {
+  display: flex; align-items: center; gap: var(--space-3);
+  text-decoration: none; padding: var(--space-3) var(--space-4);
+  border: 2px solid var(--xl-return); border-radius: var(--radius-md);
+  background: var(--xl-return-bg); color: var(--text);
+  transition: transform var(--duration-fast) var(--ease), box-shadow var(--duration-fast) var(--ease);
+}
+.xl-download-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.xl-download-icon { font-size: 1.7rem; flex: 0 0 auto; }
+.xl-download-text { display: flex; flex-direction: column; min-width: 0; }
+.xl-download-label { font-weight: 700; color: var(--xl-return); }
+.xl-download-note { font-size: 0.82rem; color: var(--text-muted); }
