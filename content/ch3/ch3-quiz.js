@@ -7,8 +7,8 @@ export default {
       topic: 'מתי צריך חיפוש לא מדויק',
       prompt: 'מתי משתמשים בחיפוש לא מדויק במקום במדויק?',
       options: [
-        { text: 'כשהטבלה מגדירה טווחים או נקודות מעבר, והערך המבוקש נופל ביניהן', correct: true },
         { text: 'כשיש הרבה שורות בטבלה', correct: false },
+        { text: 'כשהטבלה מגדירה טווחים או נקודות מעבר, והערך המבוקש נופל ביניהן', correct: true },
         { text: 'כשהערך המבוקש הוא טקסט ולא מספר', correct: false },
         { text: 'כשהטבלה לא ממוינת', correct: false },
       ],
@@ -19,10 +19,10 @@ export default {
       topic: 'הפסיק הכפול',
       prompt: 'למה יש שני פסיקים ברצף ב-<span class="ltr">=XLOOKUP(B2,$E$2:$E$6,$F$2:$F$6,,-1)</span>?',
       options: [
-        { text: 'כי דילגנו על החלק של "מה להציג אם לא נמצא", ואקסל סופר מקומות לפי פסיקים', correct: true },
         { text: 'כי צריך שני פסיקים לפני כל מספר', correct: false },
         { text: 'זו טעות הקלדה שאקסל מתעלם ממנה', correct: false },
         { text: 'כי יש שתי עמודות תוצאה', correct: false },
+        { text: 'כי דילגנו על החלק של "מה להציג אם לא נמצא", ואקסל סופר מקומות לפי פסיקים', correct: true },
       ],
       explanation: 'הפסיק השני הוא "המקום הזה נשאר ריק". בלעדיו, ה-1- נכנס למקום הלא נכון.',
     },
@@ -31,8 +31,8 @@ export default {
       topic: 'כיוון ההתאמה',
       prompt: 'מדרגות: 0, 1,000, 5,000, 12,000. עובד מכר ב-4,999. איזו מדרגה יחזיר <span class="ltr">-1</span>?',
       options: [
-        { text: '1,000', correct: true },
         { text: '5,000', correct: false },
+        { text: '1,000', correct: true },
         { text: '12,000', correct: false },
         { text: 'שגיאה, כי 4,999 לא בטבלה', correct: false },
       ],

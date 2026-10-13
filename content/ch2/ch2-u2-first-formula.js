@@ -53,10 +53,10 @@ export default {
         type: 'mc',
         prompt: 'איזו נוסחה תחזיר את <b>המחיר</b> (עמודה C) לפי המק"ט שבתא F2?',
         options: [
-          { text: '<span class="ltr">=XLOOKUP(F2,A2:A6,C2:C6)</span>', correct: true },
           { text: '<span class="ltr">=XLOOKUP(F2,A2:C6,C2:C6)</span>', correct: false, hint: '"איפה מחפשים" חייבת להיות <b>עמודה אחת</b> — זו שבה המק"ט נמצא. סימון של כל הטבלה זה מה שהיה נחוץ ב-VLOOKUP.' },
           { text: '<span class="ltr">=XLOOKUP(F2,A2:A6,3)</span>', correct: false, hint: 'המספר 3 הוא ספירת עמודות — בדיוק מה ש-XLOOKUP באה לבטל. מסמנים את העמודה עצמה: C2:C6.' },
           { text: '<span class="ltr">=XLOOKUP(A2:A6,F2,C2:C6)</span>', correct: false, hint: 'הסדר התהפך. ראשון תמיד <b>מה</b> מחפשים (תא בודד), ורק אחריו <b>איפה</b> מחפשים (עמודה).' },
+          { text: '<span class="ltr">=XLOOKUP(F2,A2:A6,C2:C6)</span>', correct: true },
         ],
       },
     },

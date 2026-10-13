@@ -51,8 +51,8 @@ export default {
         type: 'mc',
         prompt: 'איזו נוסחה תציג "לא במלאי" כשהמק"ט לא נמצא?',
         options: [
-          { text: '<span class="ltr">=XLOOKUP(F2,$A$2:$A$20,$B$2:$B$20,"לא במלאי")</span>', correct: true },
           { text: '<span class="ltr">=XLOOKUP(F2,$A$2:$A$20,$B$2:$B$20,,"לא במלאי")</span>', correct: false, hint: 'הפסיק הכפול מדלג על המקום הזה — וכאן דווקא רוצים למלא אותו. פסיק אחד בלבד.' },
+          { text: '<span class="ltr">=XLOOKUP(F2,$A$2:$A$20,$B$2:$B$20,"לא במלאי")</span>', correct: true },
           { text: '<span class="ltr">=XLOOKUP(F2,"לא במלאי",$A$2:$A$20,$B$2:$B$20)</span>', correct: false, hint: 'סדר החלקים קבוע: מה מחפשים, איפה, מה מחזירים — ורק אחריהם מה להציג אם לא נמצא.' },
           { text: '<span class="ltr">=IF(XLOOKUP(F2,$A$2:$A$20,$B$2:$B$20)="","לא במלאי")</span>', correct: false, hint: 'זה עובד רק על תא ריק, לא על שגיאת #N/A — וממילא XLOOKUP כבר יודעת לעשות את זה לבד בארגומנט אחד.' },
         ],

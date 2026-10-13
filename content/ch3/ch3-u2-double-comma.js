@@ -54,9 +54,9 @@ export default {
         type: 'mc',
         prompt: 'איזו נוסחה תחזיר נכון את אחוז הבונוס לפי מדרגות?',
         options: [
-          { text: '<span class="ltr">=XLOOKUP(B2,$E$2:$E$6,$F$2:$F$6,,-1)</span>', correct: true },
           { text: '<span class="ltr">=XLOOKUP(B2,$E$2:$E$6,$F$2:$F$6,-1)</span>', correct: false, hint: 'חסר פסיק. עם פסיק אחד, ה-1- נכנס למקום של "מה להציג אם לא נמצא" — והחיפוש נשאר מדויק, כלומר #N/A.' },
           { text: '<span class="ltr">=XLOOKUP(B2,$E$2:$E$6,$F$2:$F$6,TRUE)</span>', correct: false, hint: 'TRUE/FALSE שייכים ל-VLOOKUP. ב-XLOOKUP סוג ההתאמה הוא מספר: 0, 1- או 1.' },
+          { text: '<span class="ltr">=XLOOKUP(B2,$E$2:$E$6,$F$2:$F$6,,-1)</span>', correct: true },
           { text: '<span class="ltr">=XLOOKUP(B2,-1,$E$2:$E$6,$F$2:$F$6)</span>', correct: false, hint: 'הסדר השתבש. סוג ההתאמה תמיד בסוף, אחרי שלושת החלקים הרגילים.' },
         ],
       },
